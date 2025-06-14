@@ -1,0 +1,55 @@
+{
+  "name": "moe-back",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon src/app.js",
+    "prepare": "husky",
+    "check:fix": "biome check . --write",
+    "migrate": "node src/migrate.js",
+    "insert": "node src/insertData.js"
+  },
+  "lint-staged": {
+    "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}": [
+      "pnpm check:fix"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@commitlint/config-conventional": "^19.8.0",
+    "axios": "^1.8.4",
+    "bcrypt": "^5.0.0",
+    "body-parser": "^1.20.3",
+    "cloudinary": "^2.6.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^4.21.2",
+    "fs": "0.0.1-security",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.0",
+    "multer": "1.4.5-lts.1",
+    "multer-storage-cloudinary": "^4.0.0",
+    "mysql2": "^3.12.0",
+    "node-cron": "^3.0.3",
+    "path": "^0.12.7",
+    "sequelize": "^6.37.5",
+    "sequelize-cli": "^6.6.2",
+    "socket.io": "^4.8.1"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "1.9.4",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.3.0",
+    "nodemon": "^3.1.9"
+  }
+}
