@@ -1,4 +1,3 @@
-const PORT = 3050;
 import { createServer } from "node:http";
 import bodyParser from "body-parser";
 import cors from "cors";
@@ -7,6 +6,7 @@ import morgan from "morgan";
 import { Server } from "socket.io";
 import db from "./models/index.js";
 import route from "./routes/index.js";
+import { HOST, PORT } from "./config/config.js";
 
 const app = express();
 const corsOptions = {
@@ -53,7 +53,7 @@ io.on("connection", (socket) => {
 
 httpServer.listen(PORT, (err) => {
     if (!err) {
-        console.log(`Server is running on http://localhost:${PORT}`);
+        console.log(`Server is running on http://${HOST}:${PORT}`);
     } else {
         console.log("Error occurred, server can not start", err);
     }
