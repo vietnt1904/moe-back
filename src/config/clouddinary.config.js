@@ -7,9 +7,9 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 cloudinary.config({
-    cloud_name: "dl4podtgy",
-    api_key: "993843185934453",
-    api_secret: "FVK2TS5FRzkFO2Z2zFrsyiwFHfs",
+    cloud_name: CLOUD_NAME,
+    api_key: CLOUD_API_KEY,
+    api_secret: CLOUD_API_SECRET,
 });
 
 const storage = new CloudinaryStorage({
