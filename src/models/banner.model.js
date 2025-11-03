@@ -1,13 +1,17 @@
 import DataTypes from "sequelize";
 import sequelize from "../config/sequelize.config.js";
 
-export const Genre = sequelize.define(
-    "Genre",
+export const Banner = sequelize.define(
+    "Banner",
     {
         id: {
             type: DataTypes.INTEGER,
             primaryKey: true,
             autoIncrement: true,
+        },
+        image: {
+            type: DataTypes.STRING,
+            allowNull: false,
         },
         name: {
             type: DataTypes.STRING,
@@ -18,22 +22,23 @@ export const Genre = sequelize.define(
             allowNull: true,
             defaultValue: true,
         },
+        startDate: {
+            type: DataTypes.DATE,
+            allowNull: true,
+            defaultValue: new Date(),
+        },
+        endDate: {
+            type: DataTypes.DATE,
+            allowNull: true,
+            defaultValue: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        },
     },
     {
-        tableName: "Genres",
+        tableName: "Banners",
         timestamps: true,
     }
 );
 
-Genre.associate = function (models) {
-    Genre.belongsToMany(models.Story, {
-        through: "StoryGenres",
-        foreignKey: "genreId",
-        otherKey: "storyId",
-        as: "Stories",
-    });
-};
-
 export default (sequelize, DataTypes) => {
-    return Genre;
+    return Banner;
 };

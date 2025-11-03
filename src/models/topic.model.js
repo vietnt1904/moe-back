@@ -13,6 +13,11 @@ export const Topic = sequelize.define(
             type: DataTypes.STRING,
             allowNull: false,
         },
+        isActive: {
+            type: DataTypes.BOOLEAN,
+            allowNull: true,
+            defaultValue: true,
+        },
     },
     {
         tableName: "Topics",

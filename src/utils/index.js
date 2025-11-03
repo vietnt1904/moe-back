@@ -15,3 +15,7 @@ export const getIdTitleFromUrl = (url) => {
   const slug = parts.slice(0, parts.length - 1).join("-");
   return { id, slug };
 };
+
+export const createOTP = () => {
+  return String(Math.floor(100000 + Math.random() * 900000));
+};

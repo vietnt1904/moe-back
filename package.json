@@ -27,10 +27,11 @@
   "license": "ISC",
   "dependencies": {
     "@commitlint/config-conventional": "^19.8.0",
+    "@mantine/notifications": "^8.2.1",
     "axios": "^1.8.4",
     "bcrypt": "^5.0.0",
     "body-parser": "^1.20.3",
-    "cloudinary": "^2.6.0",
+    "cloudinary": "1.27.1",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^4.21.2",
@@ -41,7 +42,10 @@
     "multer-storage-cloudinary": "^4.0.0",
     "mysql2": "^3.12.0",
     "node-cron": "^3.0.3",
+    "nodemailer": "^7.0.5",
+    "p-limit": "^6.2.0",
     "path": "^0.12.7",
+    "redis": "^5.6.0",
     "sequelize": "^6.37.5",
     "sequelize-cli": "^6.6.2",
     "socket.io": "^4.8.1"

@@ -65,7 +65,8 @@ export const Story = sequelize.define(
       defaultValue: false,
     },
     star: {
-      type: DataTypes.FLOAT,
+      // tổng số sao
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
@@ -86,6 +87,7 @@ export const Story = sequelize.define(
       defaultValue: 0,
     },
     rating: {
+      // Tổng số rate
       type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
@@ -109,6 +111,21 @@ export const Story = sequelize.define(
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
+    },
+    lastUpdate: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      defaultValue: new Date(),
+    },
+    isLock: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+      defaultValue: false,
+    },
+    price: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      defaultValue: 0,
     },
   },
   {
@@ -155,6 +172,11 @@ Story.associate = (models) => {
   Story.hasMany(models.Comment, {
     foreignKey: "storyId",
     as: "Comments",
+  });
+
+  Story.hasMany(models.Rate, {
+    foreignKey: "storyId",
+    as: "Rates",
   });
 };
 

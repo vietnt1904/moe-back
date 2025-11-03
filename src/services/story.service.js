@@ -4,6 +4,7 @@ import { Genre } from "../models/genre.model.js";
 import { Topic } from "../models/topic.model.js";
 import { User } from "../models/user.model.js";
 import { Chapter } from "../models/chapter.model.js";
+import { UserStory } from "../models/userStory.model.js";
 
 const StoryService = {
   async getStoryList(page, limit) {
@@ -52,8 +53,39 @@ const StoryService = {
 
   async getStoryById(id, slug) {
     try {
+      // await Story.increment("views", {
+      //   by: 1,
+      //   where: { id: id, slug: slug, status: "active" },
+      // });
       const story = await Story.findOne({
         where: { id: id, slug: slug, status: "active" },
+        include: [
+          {
+            model: User,
+            as: "Author",
+            attributes: ["id", "fullName", "email"],
+          },
+          {
+            model: Genre,
+            as: "Genres",
+          },
+          {
+            model: Topic,
+            as: "Topics",
+          },
+        ],
+      });
+      return story;
+    } catch (error) {
+      console.error("Error get story by ID:", error);
+      throw error;
+    }
+  },
+
+  async getStoryByIdOfAuthor(id, slug) {
+    try {
+      const story = await Story.findOne({
+        where: { id: id, slug: slug },
         include: [
           {
             model: User,
@@ -149,11 +181,24 @@ const StoryService = {
 
   async getStoriesByAuthor(authorId) {
     try {
-      const stories = await Story.findAll({ where: { authorId: authorId } });
+      const stories = await Story.findAll({
+        where: { authorId: authorId, status: "active" },
+      });
       return stories;
     } catch (error) {
       console.error("Error get stories by author:", error);
       throw error;
+    }
+  },
+
+  async getAllStoriesOfAuthor(authorId) {
+    try {
+      const stories = await Story.findAll({
+        where: { authorId: authorId },
+      });
+      return stories;
+    } catch (error) {
+      throw new Error(error.message);
     }
   },
 
@@ -234,7 +279,7 @@ const StoryService = {
   async getStoriesAllTopics() {
     const limit = 20;
     try {
-      const topics = await Topic.findAll();
+      const topics = await Topic.findAll({ where: { isActive: true } });
       const result = [];
       for (const topic of topics) {
         const stories = await topic.getStories({
@@ -410,11 +455,98 @@ const StoryService = {
           },
         ],
         limit: limit,
-        order: [[{ model: Chapter, as: "Chapters" }, "createdAt", "DESC"], ["views", "DESC"], ["likes", "DESC"]],
+        order: [
+          [{ model: Chapter, as: "Chapters" }, "createdAt", "DESC"],
+          ["views", "DESC"],
+          ["likes", "DESC"],
+        ],
       });
       return stories;
     } catch (error) {
       console.error("Error get proposal stories:", error);
+      throw error;
+    }
+  },
+
+  async getStoryFollowers(storyId) {
+    try {
+      const followers = await UserStory.count({
+        where: { storyId: storyId, isSave: true },
+      });
+      return followers;
+    } catch (error) {
+      console.error("Error get story followers:", error);
+      throw error;
+    }
+  },
+
+  async getTop10() {
+    try {
+      const top10 = await Story.findAll({
+        attributes: {
+          include: [
+            Sequelize.literal(
+              "CASE WHEN rating = 0 THEN 0 ELSE star/rating END",
+              "ratingPoint"
+            ),
+          ],
+        },
+        order: [
+          ["views", "DESC"],
+          [
+            Sequelize.literal(
+              "CASE WHEN rating = 0 THEN 0 ELSE star/rating END"
+            ),
+            "DESC",
+          ],
+        ],
+        limit: 10,
+      });
+      return top10;
+    } catch (error) {
+      console.error("Error get top 10 stories:", error);
+      throw error;
+    }
+  },
+
+  async getInforToBuyStory(storyId) {
+    try {
+      const story = await Story.findOne({
+        where: { id: storyId },
+        include: [
+          {
+            model: User,
+            as: "Author",
+            attributes: ["id", "fullName", "email"],
+          },
+        ],
+      });
+      return story;
+    } catch (error) {
+      console.error("Error get infor to buy story:", error);
+      throw error;
+    }
+  },
+
+  async getUserSubscribeStoriesOfAuthor(userId, authorId) {
+    try {
+      const stories = await UserStory.findAll({
+        where: {
+          userId: userId,
+        },
+        include: [
+          {
+            model: Story,
+            as: "Story",
+            where: {
+              authorId: authorId,
+            },
+          },
+        ],
+      });
+      return stories;
+    } catch (error) {
+      console.error("Error get user subscribe stories of author:", error);
       throw error;
     }
   },
@@ -667,6 +799,19 @@ const StoryService = {
       return story;
     } catch (error) {
       console.error("Error update story status:", error);
+      throw error;
+    }
+  },
+
+  async changeStoryStatusAdmin(id, status) {
+    try {
+      const story = await Story.update(
+        { status: status },
+        { where: { id: id } }
+      );
+      return story > 0 ? true : false;
+    } catch (error) {
+      console.error("Error change story status:", error);
       throw error;
     }
   },

@@ -1,13 +1,17 @@
 import express from "express";
 import {
   createStory,
+  getInforToBuyStory,
   getProposalStories,
   getStoriesAllTopics,
   getStoriesByAuthor,
   getStoriesByTopic,
   getStoryById,
+  getStoryFollowers,
   getStoryList,
+  getTop10,
   getTrendingStory,
+  getUserSubscribeStoriesOfAuthor,
   searchStories,
   updateStory,
 } from "../controllers/story.controller.js";
@@ -24,6 +28,10 @@ storyRouter.get("/topic/:id", getStoriesByTopic);
 storyRouter.get("/search", searchStories);
 storyRouter.get("/trending", getTrendingStory);
 storyRouter.get("/proposal", getProposalStories);
+storyRouter.get("/followers/:id", getStoryFollowers);
+storyRouter.get("/mysubscribe/:id", getUserSubscribeStoriesOfAuthor); // id of author
+storyRouter.get("/ranking", getTop10);
+storyRouter.get("/buy/:id", getInforToBuyStory);
 
 storyRouter.put("/update/:id", uploadAvatar, updateStory);
 

@@ -18,7 +18,7 @@ const ChapterService = {
           "dislikes",
         ],
         where: { storyId: storyId },
-        order: [["chapterNumber", "ASC"]],
+        order: [["chapterNumber", "DESC"]],
       });
       return chapters;
     } catch (error) {
@@ -29,7 +29,15 @@ const ChapterService = {
 
   async getChapterById(id, slug) {
     try {
+      await Chapter.increment("views", {
+        by: 1,
+        where: { id: id, slug: slug },
+      });
       const chapter = await Chapter.findOne({ where: { id: id, slug: slug } });
+      if (!chapter) {
+        return null;
+      }
+      await Story.increment("views", { by: 1, where: { id: chapter.storyId } });
       return chapter;
     } catch (error) {
       console.error("Error get chapter by ID:", error);
@@ -37,11 +45,39 @@ const ChapterService = {
     }
   },
 
+  async getAuthorChapter(id, slug) {
+    try {
+      const chapter = await Chapter.findOne({ where: { id: id, slug: slug } });
+      return chapter;
+    } catch (error) {
+      console.error("Error get author chapter:", error);
+      throw error;
+    }
+  },
+
+  async getTitleAndAuthorByChapterId(id) {
+    try {
+      const chapter = await Chapter.findOne({
+        attributes: ["storyId", "title", "chapterNumber"],
+        where: { id: id },
+      });
+      return chapter;
+    } catch (error) {
+      console.error("Error get title and author by chapter ID:", error);
+      throw error;
+    }
+  },
+
   async getChapterByStoryIdAndChapterNumber(storyId, chapterNumber) {
     try {
+      await Chapter.increment("views", {
+        by: 1,
+        where: { storyId: storyId, chapterNumber: chapterNumber },
+      });
       const chapter = await Chapter.findOne({
         where: { storyId: storyId, chapterNumber: chapterNumber },
       });
+      await Story.increment("views", { by: 1, where: { id: chapter.storyId } });
       return chapter;
     } catch (error) {
       console.error("Error get chapter by number:", error);
@@ -69,11 +105,12 @@ const ChapterService = {
 
   async getNextChapter(storyId, chapterNumber) {
     try {
+      const number = parseFloat(chapterNumber).toFixed(1);
       const nextChapter = await Chapter.findOne({
         attributes: ["id", "chapterNumber", "title", "storyId"],
         where: {
           storyId: storyId,
-          chapterNumber: { [Op.gt]: chapterNumber },
+          chapterNumber: { [Op.gt]: number },
           status: "published",
         },
         order: [["chapterNumber", "ASC"]],
@@ -87,9 +124,14 @@ const ChapterService = {
 
   async getFirstChapter(storyId) {
     try {
+      await Chapter.increment("views", { by: 1, where: { storyId: storyId } });
       const firstChapter = await Chapter.findOne({
         where: { storyId: storyId },
         order: [["chapterNumber", "ASC"]],
+      });
+      await Story.increment("views", {
+        by: 1,
+        where: { id: firstChapter.storyId },
       });
       return firstChapter;
     } catch (error) {
@@ -100,9 +142,14 @@ const ChapterService = {
 
   async getLastChapter(storyId) {
     try {
+      await Chapter.increment("views", { by: 1, where: { storyId: storyId } });
       const lastChapter = await Chapter.findOne({
         where: { storyId: storyId },
         order: [["chapterNumber", "DESC"]],
+      });
+      await Story.increment("views", {
+        by: 1,
+        where: { id: lastChapter.storyId },
       });
       return lastChapter;
     } catch (error) {
@@ -115,8 +162,37 @@ const ChapterService = {
 
   async createChapter(data) {
     try {
+      let { chapterNumber, storyId } = data;
+
+      const nextChapterNumber = (Math.floor(chapterNumber) + 1).toFixed(1);
+
+      let isExitNumber = await Chapter.findOne({
+        where: { storyId: storyId, chapterNumber: Number(chapterNumber) },
+      });
+      while (isExitNumber) {
+        chapterNumber = (Number(chapterNumber) + 0.1).toFixed(1);
+        if (chapterNumber === nextChapterNumber) {
+          return {
+            success: false,
+            message:
+              "Lỗi số chương bổ sung đã tới giới hạn. Hãy viết chương mới",
+          };
+        }
+        isExitNumber = await Chapter.findOne({
+          where: { storyId: storyId, chapterNumber: chapterNumber },
+        });
+      }
+      data.chapterNumber = chapterNumber;
+
       const newChapter = await Chapter.create(data);
-      return newChapter;
+      await Story.update(
+        { lastUpdate: new Date() },
+        { where: { id: storyId } }
+      );
+      return {
+        success: true,
+        data: newChapter,
+      };
     } catch (error) {
       console.error("Error create chapter:", error);
       throw error;
@@ -217,6 +293,19 @@ const ChapterService = {
       return updatedChapter;
     } catch (error) {
       console.error("Error update chapter status:", error);
+      throw error;
+    }
+  },
+
+  async changeChapterStatusAdmin(id, status) {
+    try {
+      const updatedChapter = await Chapter.update(
+        { status: status },
+        { where: { id: id } }
+      );
+      return updatedChapter > 0 ? true : false;
+    } catch (error) {
+      console.error("Error change chapter status:", error);
       throw error;
     }
   },

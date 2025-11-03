@@ -11,7 +11,7 @@ export const Chapter = sequelize.define(
       autoIncrement: true,
     },
     chapterNumber: {
-      type: DataTypes.FLOAT,
+      type: DataTypes.DECIMAL(6, 1),
       allowNull: false,
     },
     title: {
@@ -43,7 +43,8 @@ export const Chapter = sequelize.define(
         "published",
         "rejected",
         "suspended",
-        "error"
+        "error",
+        "locked",
       ),
       allowNull: false,
       defaultValue: "pending",

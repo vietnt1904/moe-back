@@ -1,8 +1,9 @@
 import express from "express";
-import { getAllChaptersByStoryId, getChapterById, getNextChapter, getPreviousChapter, writeChapter } from "../controllers/chapter.controller.js";
+import { getAllChaptersByStoryId, getAuthorChapter, getChapterById, getNextChapter, getPreviousChapter, writeChapter } from "../controllers/chapter.controller.js";
 
 const chapterRouter = express.Router();
 
+chapterRouter.get("/author/:title", getAuthorChapter);
 chapterRouter.get("/:title", getChapterById);
 chapterRouter.get("/:id/previous", getPreviousChapter);
 chapterRouter.get("/:id/next", getNextChapter);

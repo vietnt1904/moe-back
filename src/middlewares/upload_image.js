@@ -31,8 +31,11 @@ export const uploadAvatarAndBackground = (req, res, next) => {
   ])(req, res, function (err) {
     if (err) {
       console.error("Upload lỗi:", err);
-      return res.status(400).json({ error: "Lỗi upload ảnh", errorDetail: err.message });
+      return res.status(500).json({ error: "Lỗi upload ảnh", errorDetail: err.message });
     }
+
+    console.log("FILES:", req.files);
+console.log("BODY:", req.body);
 
     // Nếu ảnh mới được upload, gán đường dẫn vào req.body
     if (req.files?.avatar && req.files.avatar[0]) {

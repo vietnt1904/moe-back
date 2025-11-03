@@ -76,6 +76,13 @@ export const User = sequelize.define(
   }
 );
 
+User.associate = function (models) {
+  User.hasMany(models.UserStory, {
+    foreignKey: "userId",
+    as: "User",
+  });
+};
+
 export default (sequelize, DataTypes) => {
   return User;
 };

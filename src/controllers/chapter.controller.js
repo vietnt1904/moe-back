@@ -1,5 +1,6 @@
 import ChapterService from "../services/chapter.service.js";
-import ReasonUpdateService from "../services/reasonUpdate.service.js";
+import NotificationService from "../services/notification.service.js";
+import UserStoryService from "../services/userStory.service.js";
 import { getIdTitleFromUrl } from "../utils/index.js";
 
 export const getAllChaptersByStoryId = async (req, res) => {
@@ -38,7 +39,6 @@ export const getAllChaptersByStoryId = async (req, res) => {
   }
 };
 
-
 export const getChapterById = async (req, res) => {
   try {
     const { title } = req.params;
@@ -54,6 +54,25 @@ export const getChapterById = async (req, res) => {
     return res.status(500).json({
       success: false,
       error: `An error occurred during get chapter by ID! ${error}.`,
+    });
+  }
+};
+
+export const getAuthorChapter = async (req, res) => {
+  try {
+    const { title } = req.params;
+    const { id, slug } = getIdTitleFromUrl(title);
+    const chapter = await ChapterService.getAuthorChapter(id, slug);
+    return res.status(200).json({
+      success: true,
+      message: "Get author chapter successfully",
+      data: chapter,
+    });
+  } catch (error) {
+    console.error("Error get author chapter:", error);
+    return res.status(500).json({
+      success: false,
+      error: `An error occurred during get author chapter! ${error}.`,
     });
   }
 };
@@ -118,9 +137,17 @@ export const getNextChapter = async (req, res) => {
   }
 };
 
-export const writeChapter = async (req , res) => {
+export const writeChapter = async (req, res) => {
   try {
     const chapter = await ChapterService.createChapter(req.body);
+
+    if (!chapter?.success) {
+      return res.status(200).json({
+        success: false,
+        message: chapter?.message,
+      });
+    }
+
     return res.status(200).json({
       success: true,
       message: "Create chapter successfully!",
@@ -130,7 +157,7 @@ export const writeChapter = async (req , res) => {
     console.log("Error in create chapter: ", error?.message);
     return res.status(500).json({
       success: false,
-      message: `An error occurred during create story! ${error}.`
+      message: `An error occurred during create story! ${error}.`,
     });
   }
 };
@@ -197,9 +224,14 @@ export const updateChapterStatusAdmin = async (req, res) => {
   try {
     const { id } = req.params;
     const { status, reason } = req.body;
-    const chapter = await ChapterService.updateChapterStatusAdmin(
-      id,
-      status
+    const chapter = await ChapterService.updateChapterStatusAdmin(id, status);
+    const data = await ChapterService.getTitleAndAuthorByChapterId(id);
+    
+    const isAccept = status === "accept";
+    await NotificationService.sendNotificationToAuthorByChapter(
+      data.storyId,
+      data.chapterNumber,
+      isAccept
     );
     return res.status(200).json({
       success: true,
@@ -215,11 +247,33 @@ export const updateChapterStatusAdmin = async (req, res) => {
   }
 };
 
+export const changeChapterStatusAdmin = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+    const chapter = await ChapterService.changeChapterStatusAdmin(id, status);
+    return res.status(200).json({
+      success: true,
+      message: "Change chapter status successfully",
+      data: chapter,
+    });
+  } catch (error) {
+    console.error("Error change chapter status:", error);
+    return res.status(500).json({
+      success: false,
+      error: `An error occurred during change chapter status! ${error}.`,
+    });
+  }
+};
+
 export const getAllPendingChaptersAdmin = async (req, res) => {
   try {
-    const {page, limit} = req.query;
+    const { page, limit } = req.query;
     const offset = (page - 1) * limit;
-    const chapters = await ChapterService.getAllPendingChaptersAdmin(offset, limit);
+    const chapters = await ChapterService.getAllPendingChaptersAdmin(
+      offset,
+      limit
+    );
     return res.status(200).json({
       success: true,
       message: "Get all pending chapters successfully",
