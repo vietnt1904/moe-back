@@ -17,3 +17,7 @@ export const CLOUD_API_SECRET = process.env.CLOUD_API_SECRET;
 export const HOST = process.env.HOST || "0.0.0.0";
 export const PORT = process.env.PORT || 3050;
 export const RENDER_DB_URL = process.env.RENDER_DB_URL;
+export const REDIS_NAME = process.env.REDIS_NAME;
+export const REDIS_PASSWORD = process.env.REDIS_PASSWORD;
+export const SOCKET_HOST = process.env.SOCKET_HOST;
+export const SOCKET_PORT = process.env.SOCKET_PORT;
