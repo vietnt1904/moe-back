@@ -23,7 +23,7 @@ export const UserAuthor = sequelize.define(
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
       references: {
-        model: "Authors",
+        model: "Users",
         key: "id",
       },
       onUpdate: "CASCADE",
