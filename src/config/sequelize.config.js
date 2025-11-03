@@ -20,7 +20,7 @@ try {
   await sequelize.authenticate();
   console.log("✅ Kết nối Render PostgreSQL thành công!");
 } catch (error) {
-  console.error("❌ Kết nối thất bại:", error.message);
+  console.error("❌ Kết nối thất bại:", error.message); 
 }
 
 export default sequelize;
