@@ -44,11 +44,17 @@ const EmailService = {
         from: process.env.EMAIL_USER,
         to: sendTo,
         subject: subject,
-        text: `Mã OTP của bạn là <strong>${OTP}</strong>. Mã OTP có hiệu lực trong 5 phút.`,
+        text: `Mã OTP của bạn là ${OTP}. Mã OTP có hiệu lực trong 5 phút.`,
       };
       SERVER_MEMORY.delete(sendTo);
 
-      const isSuccess = await transporter.sendMail(mailOptions);
+      const isSuccess = await transporter.sendMail(mailOptions, (err, info) => {
+        if (err) {
+          console.error("MAIL ERROR:", err);
+        } else {
+          console.log("MAIL SENT:", info.response);
+        }
+      });
       if (isSuccess) {
         SERVER_MEMORY.set(sendTo, hashOTP);
         setTimeout(() => {
