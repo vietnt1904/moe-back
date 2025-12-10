@@ -46,20 +46,20 @@ const insertUsers = async () => {
       }
     ];
 
-    for (let i = 1; i <= 20; i++) {
-      users.push({
-        username: `user${i}`,
-        password: "123456", // sẽ hash sau
-        fullName: `Người dùng ${i}`,
-        dob: randomDate(new Date(1980, 0, 1), new Date(2005, 0, 1)),
-        role: "user",
-        email: `user${i}@gmail.com`,
-        phoneNumber: randomPhone(),
-        avatar: "https://i.pinimg.com/736x/a7/8b/18/a78b189b79e52db7af2beb1377fcafbd.jpg",
-        backgroundImage: "https://tophinhanh.net/wp-content/uploads/2024/02/hinh-nen-may-tinh-4k-12.jpg",
-        spiritStones: Math.floor(Math.random() * 200),
-      });
-    }
+    // for (let i = 1; i <= 20; i++) {
+    //   users.push({
+    //     username: `user${i}`,
+    //     password: "123456", // sẽ hash sau
+    //     fullName: `Người dùng ${i}`,
+    //     dob: randomDate(new Date(1980, 0, 1), new Date(2005, 0, 1)),
+    //     role: "user",
+    //     email: `user${i}@gmail.com`,
+    //     phoneNumber: randomPhone(),
+    //     avatar: "https://i.pinimg.com/736x/a7/8b/18/a78b189b79e52db7af2beb1377fcafbd.jpg",
+    //     backgroundImage: "https://tophinhanh.net/wp-content/uploads/2024/02/hinh-nen-may-tinh-4k-12.jpg",
+    //     spiritStones: Math.floor(Math.random() * 200),
+    //   });
+    // }
 
     // Hash passwords
     for (const user of users) {
@@ -244,12 +244,12 @@ const insertMoreChapters = async () => {
 };
 
 const insertData = async () => {
-  // await insertUsers();
-  // await insertTopics();
-  // await insertGenres();
+  await insertUsers();
+  await insertTopics();
+  await insertGenres();
   // await insertStories();
   // await insertChapters();
-  await insertMoreChapters();
+  // await insertMoreChapters();
 };
 
 await insertData();

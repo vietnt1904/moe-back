@@ -2,7 +2,7 @@ import { JWT_SECRET } from "../config/config.js";
 import AuthService from "../services/auth.service.js";
 import jwt from "jsonwebtoken";
 import EmailService from "../services/email.service.js";
-import client from "../config/redis.config.js";
+// import client from "../config/redis.config.js";
 
 export const login = async (req, res) => {
   try {
@@ -19,7 +19,7 @@ export const login = async (req, res) => {
       JWT_SECRET,
       { expiresIn: "30Days" }
     );
-    await client.set("IdAndToken" + user.id, token, {EX: 30 * 24 * 60 * 60});
+    // await client.set("IdAndToken" + user.id, token, {EX: 30 * 24 * 60 * 60});
     return res.status(200).json({
       success: true,
       message: "Login successfully",

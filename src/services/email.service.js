@@ -2,9 +2,10 @@
 import bcrypt from "bcrypt";
 
 import nodemailer from "nodemailer";
-import client from "../config/redis.config.js";
 import { createOTP } from "../utils/index.js";
 import pLimit from "p-limit";
+import { JWT_SECRET, SERVER_MEMORY } from "../config/config.js";
+import jwt from "jsonwebtoken";
 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
@@ -45,14 +46,14 @@ const EmailService = {
         subject: subject,
         text: `Mã OTP của bạn là <strong>${OTP}</strong>. Mã OTP có hiệu lực trong 5 phút.`,
       };
-      await client.del(`otp:${sendTo}`);
-
-      await client.set(`otp:${sendTo}`, hashOTP, {
-        EX: 300, // TTL 300 giây
-      });
+      SERVER_MEMORY.delete(sendTo);
 
       const isSuccess = await transporter.sendMail(mailOptions);
       if (isSuccess) {
+        SERVER_MEMORY.set(sendTo, hashOTP);
+        setTimeout(() => {
+          SERVER_MEMORY.delete(sendTo);
+        }, 300000);
         return { success: true, message: "Email đã được gửi thành công." };
       } else {
         return {

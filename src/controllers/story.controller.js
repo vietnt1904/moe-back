@@ -1,4 +1,3 @@
-import client from "../config/redis.config.js";
 import NotificationService from "../services/notification.service.js";
 import ReasonUpdateService from "../services/reasonUpdate.service.js";
 import StoryService from "../services/story.service.js";
@@ -125,19 +124,7 @@ export const getStoriesByTopic = async (req, res) => {
 
 export const getStoriesAllTopics = async (req, res) => {
   try {
-    let stories = null;
-    stories = await client.get("storiesAllTopics");
-    if (stories !== null) {
-      return res.status(200).json({
-        success: true,
-        message: "Get stories all topics successfully",
-        data: JSON.parse(stories),
-      });
-    }
-    stories = await StoryService.getStoriesAllTopics();
-    await client.set("storiesAllTopics", JSON.stringify(stories), {
-      EX: 300,
-    });
+    const stories = await StoryService.getStoriesAllTopics();
     return res.status(200).json({
       success: true,
       message: "Get stories all topics successfully",

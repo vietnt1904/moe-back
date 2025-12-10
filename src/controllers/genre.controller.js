@@ -1,19 +1,8 @@
-import client from "../config/redis.config.js";
 import GenreService from "../services/genre.service.js";
 
 export const getAllGenres = async (req, res) => {
   try {
-    let genres = null;
-    genres = await client.get("AllGenres");
-    if (genres !== null) {
-      return res.status(200).json({
-        success: true,
-        message: "Get all genres successfully",
-        genres: JSON.parse(genres),
-      });
-    }
-    genres = await GenreService.getAllGenres();
-    await client.set("AllGenres", JSON.stringify(genres), { EX: 300 });
+    const genres = await GenreService.getAllGenres();
     return res.status(200).json({
       success: true,
       message: "Get all genres successfully",
@@ -49,9 +38,7 @@ export const createGenre = async (req, res) => {
   try {
     const genre = await GenreService.createGenre(req.body);
     if (genre?.success) {
-      await client.del("AllGenres");
       const genres = await GenreService.getAllGenres();
-      await client.set("AllGenres", JSON.stringify(genres), { EX: 300 });
       return res.status(200).json({
         success: true,
         message: "Create genre successfully",

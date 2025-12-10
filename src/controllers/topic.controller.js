@@ -1,22 +1,9 @@
-import client from "../config/redis.config.js";
 import TopicService from "../services/topic.service.js";
 
 export const getAllTopics = async (req, res) => {
   try {
-    let topics = null;
-    topics = await client.get("AllTopics");
-    if (topics !== null) {
-      return res.status(200).json({
-        success: true,
-        message: "Get all topics successfully",
-        topics: JSON.parse(topics),
-      });
-    }
-    topics = await TopicService.getAllTopics();
-    await client.set("AllTopics", JSON.stringify(topics), {
-      EX: 300,
-    });
-    res.status(200).json({
+    const topics = await TopicService.getAllTopics();
+    return res.status(200).json({
       success: true,
       message: "Get all topics successfully",
       topics: topics,
@@ -51,8 +38,6 @@ export const createTopic = async (req, res) => {
   try {
     const topic = await TopicService.createTopic(req.body);
     if (topic?.success) {
-      await client.del("AllTopics");
-      getAllTopics();
       return res.status(200).json({
         success: true,
         message: "Create topic successfully",

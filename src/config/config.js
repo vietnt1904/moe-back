@@ -1,12 +1,14 @@
 import dotenv from "dotenv";
 dotenv.config();
 
+export const SERVER_MEMORY = new Map();
+
 // DB config
 
 export const DATABASE = process.env.DATABASE || "moe_db";
-export const USERNAME = "postgres";
-export const PASSWORD = "123456";
-export const DIALECT = process.env.DIALECT || "postgres";
+export const USERNAME = process.env.USERNAME || "vietnt";
+export const PASSWORD = process.env.PASSWORD || "vietnt";
+export const DIALECT = process.env.DIALECT || "mysql";
 export const DBHOST = process.env.DBHOST || "localhost";
 export const EMAIL_NAME = process.env.EMAIL_NAME;
 export const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;

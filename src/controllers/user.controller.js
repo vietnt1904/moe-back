@@ -257,7 +257,7 @@ export const getFollowersOfAuthor = async (req, res) => {
 export const getAllStoriesOfAuthor = async (req, res) => {
   try {
     const { id: authorId } = req.params;
-    const stories = await StoryService.getAllStoriesOfAuthor(authorId);
+    const stories = await StoryService.getAllStoriesOfAuthor(Number(authorId));
     return res.status(200).json({
       success: true,
       message: "Get all stories of author successfully",

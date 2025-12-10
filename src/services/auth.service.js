@@ -1,8 +1,8 @@
 import { Op } from "sequelize";
 import { User } from "../models/user.model.js";
 import bcrypt from "bcrypt";
-import client from "../config/redis.config.js";
 import EmailService from "./email.service.js";
+import { SERVER_MEMORY } from "../config/config.js";
 
 const AuthService = {
   async checkLogin(email, password) {
@@ -136,7 +136,7 @@ const AuthService = {
 
   async verifyOTP(email, otp) {
     try {
-      const hashOTPSaved = await client.get(`otp:${email}`);
+      const hashOTPSaved = SERVER_MEMORY.get(email);
       if (!hashOTPSaved) {
         return { success: false, message: "OTP hết hạn hoặc không tồn tại" };
       }
@@ -145,7 +145,8 @@ const AuthService = {
       if (!isMatch) {
         return { success: false, message: "OTP không đúng. Vui lòng thử lại." };
       }
-      await client.del(`otp:${email}`);
+
+      SERVER_MEMORY.delete(email);
 
       return { success: true, message: "Xác minh OTP thành công." };
     } catch (error) {
